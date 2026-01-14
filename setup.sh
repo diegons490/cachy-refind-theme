@@ -23,7 +23,9 @@ THEME_DIR=$(dirname "$(realpath "$0")")
 RESOLUTIONS=(
     "1280x720"
     "1920x1080"
+    "1920x1200"
     "2560x1440"
+    "2560x1600"
     "3840x2160"
     "2560x1080"
     "3440x1440"
@@ -52,16 +54,16 @@ find_refind_conf() {
         while true; do
             read -rp "$(printf "${bold}Do you want to continue with this file? [Y/n]: ${normal}")" answer
             case "$answer" in
-                [Yy]*|"")
-                    REFOUND_CONF_PATH="$found_path"
-                    return 0
-                    ;;
-                [Nn]*)
-                    return 2
-                    ;;
-                *)
-                    printf "${RED}Please answer yes or no.${RESET}\n"
-                    ;;
+            [Yy]* | "")
+                REFOUND_CONF_PATH="$found_path"
+                return 0
+                ;;
+            [Nn]*)
+                return 2
+                ;;
+            *)
+                printf "${RED}Please answer yes or no.${RESET}\n"
+                ;;
             esac
         done
     fi
@@ -88,21 +90,23 @@ show_resolution_menu() {
     printf "${CYAN}Select screen resolution:${RESET}\n"
     printf "${bold}1) 1280x720  (HD 16:9)${normal}\n"
     printf "${bold}2) 1920x1080 (Full HD 16:9)${normal}\n"
-    printf "${bold}3) 2560x1440 (2k 16:9)${normal}\n"
-    printf "${bold}4) 3840x2160 (4k 16:9)${normal}\n"
-    printf "${bold}5) 2560x1080 (Full HD Ultrawide 21:9)${normal}\n"
-    printf "${bold}6) 3440x1440 (2k Ultrawide 21:9)${normal}\n"
-    printf "${bold}7) 5120x2160 (4k Ultrawide 21:9)${normal}\n\n"
+    printf "${bold}3) 1920x1200 (Full HD 16:10)${normal}\n"
+    printf "${bold}4) 2560x1440 (2k 16:9)${normal}\n"
+    printf "${bold}5) 2560x1600 (2k 16:10)${normal}\n"
+    printf "${bold}6) 3840x2160 (4k 16:9)${normal}\n"
+    printf "${bold}7) 2560x1080 (Full HD Ultrawide 21:9)${normal}\n"
+    printf "${bold}8) 3440x1440 (2k Ultrawide 21:9)${normal}\n"
+    printf "${bold}9) 5120x2160 (4k Ultrawide 21:9)${normal}\n\n"
 }
 
 # Function to get resolution choice
 get_resolution_choice() {
     local default_choice=${1:-2}
-    read -rp "$(printf "${bold}Enter choice [1-7] (default: $default_choice): ${normal}")" res_select
+    read -rp "$(printf "${bold}Enter choice [1-9] (default: $default_choice): ${normal}")" res_select
     res_select=${res_select:-$default_choice}
 
     # Validate choice
-    if [[ "$res_select" -ge 1 && "$res_select" -le 7 ]]; then
+    if [[ "$res_select" -ge 1 && "$res_select" -le 9 ]]; then
         local index=$((res_select - 1))
         printf "%s" "${RESOLUTIONS[$index]}"
     else
@@ -143,7 +147,7 @@ generate_theme_config() {
     local res_width="$3"
     local res_height="$4"
 
-    cat > "${INSTALL_DIR}/cachy.conf" << EOF
+    cat >"${INSTALL_DIR}/cachy.conf" <<EOF
 # Theme by diegons490
 big_icon_size $size_big
 small_icon_size $size_small
@@ -170,14 +174,14 @@ install_theme() {
         printf "${YELLOW}A previous installation was found at:${RESET} ${bold}$INSTALL_DIR${normal}\n"
         read -rp "$(printf "${bold}Remove it before continuing? [Y/n]: ${normal}")" clean_ans
         case "$clean_ans" in
-            [Yy]*|"")
-                printf "${YELLOW}Removing...${RESET}\n"
-                rm -rf "$INSTALL_DIR"
-                ;;
-            *)
-                printf "${RED}Aborting to avoid overwriting files.${RESET}\n"
-                exit 1
-                ;;
+        [Yy]* | "")
+            printf "${YELLOW}Removing...${RESET}\n"
+            rm -rf "$INSTALL_DIR"
+            ;;
+        *)
+            printf "${RED}Aborting to avoid overwriting files.${RESET}\n"
+            exit 1
+            ;;
         esac
     fi
 
@@ -221,7 +225,7 @@ install_theme() {
     printf "${YELLOW}Backup: $backup_path${RESET}\n"
     cp "$REFOUND_CONF_PATH" "$backup_path"
     sed -i '/include themes\/cachy\/cachy.conf/d' "$REFOUND_CONF_PATH"
-    printf "\n# Load rEFInd theme Cachy\ninclude themes/cachy/cachy.conf\n" >> "$REFOUND_CONF_PATH"
+    printf "\n# Load rEFInd theme Cachy\ninclude themes/cachy/cachy.conf\n" >>"$REFOUND_CONF_PATH"
 
     printf "\n${GREEN}${bold}Installation complete!${RESET}\n"
     printf "Theme: ${bold}$INSTALL_DIR${normal}\n"
@@ -322,9 +326,9 @@ printf "\n"
 read -rp "$(printf "${bold}Choose an option [0-3]: ${normal}")" menu_choice
 
 case "$menu_choice" in
-    1) install_theme ;;
-    2) uninstall_theme ;;
-    3) reconfigure_theme ;;
-    0) printf "${YELLOW}Cancelled by user.${RESET}\n" && exit 0 ;;
-    *) printf "${RED}Invalid option. Exiting.${RESET}\n" && exit 1 ;;
+1) install_theme ;;
+2) uninstall_theme ;;
+3) reconfigure_theme ;;
+0) printf "${YELLOW}Cancelled by user.${RESET}\n" && exit 0 ;;
+*) printf "${RED}Invalid option. Exiting.${RESET}\n" && exit 1 ;;
 esac
