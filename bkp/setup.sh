@@ -26,7 +26,6 @@ RESOLUTIONS=(
     "1920x1200"
     "2560x1440"
     "2560x1600"
-    "3072x1920"
     "3840x2160"
     "2560x1080"
     "3440x1440"
@@ -94,21 +93,20 @@ show_resolution_menu() {
     printf "${bold}3) 1920x1200 (Full HD 16:10)${normal}\n"
     printf "${bold}4) 2560x1440 (2k 16:9)${normal}\n"
     printf "${bold}5) 2560x1600 (2k 16:10)${normal}\n"
-    printf "${bold}6) 3072x1920 (3K 16:10)${normal}\n"
-    printf "${bold}7) 3840x2160 (4k 16:9)${normal}\n"
-    printf "${bold}8) 2560x1080 (Full HD Ultrawide 21:9)${normal}\n"
-    printf "${bold}9) 3440x1440 (2k Ultrawide 21:9)${normal}\n"
-    printf "${bold}10) 5120x2160 (4k Ultrawide 21:9)${normal}\n\n"
+    printf "${bold}6) 3840x2160 (4k 16:9)${normal}\n"
+    printf "${bold}7) 2560x1080 (Full HD Ultrawide 21:9)${normal}\n"
+    printf "${bold}8) 3440x1440 (2k Ultrawide 21:9)${normal}\n"
+    printf "${bold}9) 5120x2160 (4k Ultrawide 21:9)${normal}\n\n"
 }
 
 # Function to get resolution choice
 get_resolution_choice() {
     local default_choice=${1:-2}
-    read -rp "$(printf "${bold}Enter choice [1-10] (default: $default_choice): ${normal}")" res_select
+    read -rp "$(printf "${bold}Enter choice [1-9] (default: $default_choice): ${normal}")" res_select
     res_select=${res_select:-$default_choice}
 
     # Validate choice
-    if [[ "$res_select" -ge 1 && "$res_select" -le 10 ]]; then
+    if [[ "$res_select" -ge 1 && "$res_select" -le 9 ]]; then
         local index=$((res_select - 1))
         printf "%s" "${RESOLUTIONS[$index]}"
     else
